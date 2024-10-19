@@ -54,6 +54,8 @@ set(JCEF_SRCS
   CefPrintSettings_N.h
   CefQueryCallback_N.cpp
   CefQueryCallback_N.h
+  CefRegistration_N.cpp
+  CefRegistration_N.h
   CefRequest_N.cpp
   CefRequest_N.h
   CefCallback_N.cpp
@@ -83,6 +85,8 @@ set(JCEF_SRCS
   cookie_visitor.cpp
   cookie_visitor.h
   critical_wait.h
+  devtools_message_observer.cpp
+  devtools_message_observer.h
   dialog_handler.cpp
   dialog_handler.h
   display_handler.cpp
@@ -95,6 +99,8 @@ set(JCEF_SRCS
   drag_handler.h
   focus_handler.cpp
   focus_handler.h
+  int_callback.cpp
+  int_callback.h
   jcef_version.h
   jni_scoped_helpers.h
   jni_scoped_helpers.cpp
@@ -142,8 +148,6 @@ set(JCEF_SRCS
 set(JCEF_SRCS_LINUX
   critical_wait_posix.cpp
   jni_util_linux.cpp
-  signal_restore_posix.cpp
-  signal_restore_posix.h
   temp_window_x11.cc
   temp_window_x11.h
   util_linux.cpp
@@ -151,8 +155,6 @@ set(JCEF_SRCS_LINUX
   )
 set(JCEF_SRCS_MAC
   critical_wait_posix.cpp
-  signal_restore_posix.cpp
-  signal_restore_posix.h
   temp_window_mac.h
   temp_window_mac.mm
   util_mac.h
