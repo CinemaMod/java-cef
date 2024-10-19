@@ -155,6 +155,13 @@ bool GetJNIFieldStaticInt(JNIEnv* env,
                           const char* field_name,
                           int* value);
 
+// Call a JNI method that returns an int and accepts one int argument.
+bool CallStaticJNIMethodII_V(JNIEnv* env,
+                      jclass cls,
+                      const char* method_name,
+                      int* value,
+                      int arg);
+
 // Call a JNI method that returns an int and accepts no arguments.
 bool CallJNIMethodI_V(JNIEnv* env,
                       jclass cls,

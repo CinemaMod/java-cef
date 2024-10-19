@@ -931,6 +931,20 @@ bool GetJNIFieldStaticInt(JNIEnv* env,
   return false;
 }
 
+bool CallStaticJNIMethodII_V(JNIEnv* env,
+                      jclass cls,
+                      const char* method_name,
+                      int* value,
+                      int arg) {
+  jmethodID methodID = env->GetStaticMethodID(cls, method_name, "(I)I");
+  if (methodID) {
+    *value = env->CallStaticIntMethod(cls, methodID, arg);
+    return true;
+  }
+  env->ExceptionClear();
+  return false;
+}
+
 bool CallJNIMethodI_V(JNIEnv* env,
                       jclass cls,
                       jobject obj,

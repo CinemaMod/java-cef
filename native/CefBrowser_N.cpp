@@ -65,6 +65,77 @@ int GetCefModifiersGlfw(JNIEnv* env, jclass cls, int modifiers) {
   return cef_modifiers;
 }
 
+long MapScanCodeGLFW(JNIEnv* env, jclass cls, int key_char, int scanCode) {
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_DELETE, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_LEFT, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_DOWN, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_UP, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_RIGHT, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_PAGE_DOWN, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_PAGE_UP, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_END, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_HOME, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_ENTER, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_KP_ENTER, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_LEFT_CONTROL, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_RIGHT_CONTROL, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_BACKSPACE, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_KP_4, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_KP_8, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_KP_6, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_KP_2, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_PRINT_SCREEN, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_SCROLL_LOCK, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_CAPS_LOCK, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_NUM_LOCK, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_PAUSE, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_KEY_INSERT, 0);
+
+  if (key_char == JNI_STATIC(GLFW_KEY_BACKSPACE) ||
+         key_char == JNI_STATIC(GLFW_KEY_KP_4) ||
+         key_char == JNI_STATIC(GLFW_KEY_KP_8) ||
+         key_char == JNI_STATIC(GLFW_KEY_KP_6) ||
+         key_char == JNI_STATIC(GLFW_KEY_KP_2) ||
+         key_char == JNI_STATIC(GLFW_KEY_PRINT_SCREEN) ||
+         key_char == JNI_STATIC(GLFW_KEY_SCROLL_LOCK) ||
+         key_char == JNI_STATIC(GLFW_KEY_CAPS_LOCK) ||
+         key_char == JNI_STATIC(GLFW_KEY_NUM_LOCK) ||
+         key_char == JNI_STATIC(GLFW_KEY_PAUSE) ||
+         key_char == JNI_STATIC(GLFW_KEY_INSERT)
+  ) {
+    int code_out;
+    // these jni helpers make no sense to me
+    CallStaticJNIMethodII_V(env, cls, "glfwGetKeyScancode", &code_out, key_char);
+    return code_out;
+  }
+
+  if (key_char == JNI_STATIC(GLFW_KEY_LEFT_CONTROL) || key_char == JNI_STATIC(GLFW_KEY_RIGHT_CONTROL))
+    return 29;
+  if (key_char == JNI_STATIC(GLFW_KEY_DELETE))
+    return 83;
+  if (key_char == JNI_STATIC(GLFW_KEY_LEFT))
+    return 75;
+  if (key_char == JNI_STATIC(GLFW_KEY_DOWN))
+    return 80;
+  if (key_char == JNI_STATIC(GLFW_KEY_UP))
+    return 72;
+  if (key_char == JNI_STATIC(GLFW_KEY_RIGHT))
+    return 77;
+  if (key_char == JNI_STATIC(GLFW_KEY_PAGE_DOWN))
+    return 81;
+  if (key_char == JNI_STATIC(GLFW_KEY_PAGE_UP))
+    return 73;
+  if (key_char == JNI_STATIC(GLFW_KEY_END))
+    return 79;
+  if (key_char == JNI_STATIC(GLFW_KEY_HOME))
+    return 71;
+  if (key_char == '\n' ||
+         key_char == JNI_STATIC(GLFW_KEY_ENTER) ||
+         key_char == JNI_STATIC(GLFW_KEY_KP_ENTER)
+  ) return 28;
+  return scanCode;
+}
+
 #if defined(OS_LINUX)
 
 // From ui/events/keycodes/keyboard_codes_posix.h.
@@ -1582,6 +1653,7 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
 #if defined(OS_WIN)
   jlong scanCode = 0;
   GetJNIFieldLong(env, objClass, key_event, "scancode", &scanCode);
+  scanCode = MapScanCodeGLFW(env, cls, key_char, scanCode);
   BYTE VkCode = LOBYTE(MapVirtualKey(scanCode, MAPVK_VSC_TO_VK));
   cef_event.native_key_code = (scanCode << 16) |  // key scan code
                               1;                  // key repeat count
