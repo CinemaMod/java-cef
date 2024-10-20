@@ -22,10 +22,7 @@ import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefPrintDialogCallback;
 import org.cef.callback.CefPrintJobCallback;
 import org.cef.handler.*;
-import org.cef.misc.BoolRef;
-import org.cef.misc.CefAudioParameters;
-import org.cef.misc.CefPrintSettings;
-import org.cef.misc.StringRef;
+import org.cef.misc.*;
 import org.cef.network.CefRequest;
 import org.cef.network.CefRequest.TransitionType;
 import org.cef.network.CefResponse;
@@ -815,7 +812,7 @@ public class CefClient extends CefClientHandler
     }
     
     @Override
-    public void onAudioStreamPacket(CefBrowser browser, float[] data, int frames, long pts) {
+    public void onAudioStreamPacket(CefBrowser browser, DataPointer data, int frames, long pts) {
         if (audioHandler_ != null) audioHandler_.onAudioStreamPacket(browser, data, frames, pts);
     }
     
