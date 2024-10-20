@@ -6,6 +6,7 @@ package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
 import org.cef.misc.CefAudioParameters;
+import org.cef.misc.DataPointer;
 
 /**
  * Implement this interface to handle events related to audio playing.
@@ -16,7 +17,7 @@ public interface CefAudioHandler {
 	
 	void onAudioStreamStarted(CefBrowser browser, CefAudioParameters params, int channels);
 	
-	void onAudioStreamPacket(CefBrowser browser, float[] data, int frames, long pts);
+	void onAudioStreamPacket(CefBrowser browser, DataPointer data, int frames, long pts);
 	
 	void onAudioStreamStopped(CefBrowser browser);
 	

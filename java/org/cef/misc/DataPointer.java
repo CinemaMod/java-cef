@@ -1,5 +1,8 @@
 package org.cef.misc;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.nio.ByteBuffer;
 
 public class DataPointer {
@@ -13,13 +16,18 @@ public class DataPointer {
 	}
 	
 	public DataPointer forCapacity(int capacity) {
-		dataBuffer = bufferForMemory(address, capacity);
-		initialized = true;
-		return this;
+		try {
+			dataBuffer = (ByteBuffer) memByteBuffer.invoke(address, capacity);
+			initialized = true;
+			return this;
+		} catch (Throwable err) {
+			throw new RuntimeException("Failed to invoke memByteBuffer?", err);
+		}
 	}
 	
-	public void setAlignment(int alignment) {
+	public DataPointer withAlignment(int alignment) {
 		this.alignment = alignment;
+		return this;
 	}
 	
 	public long getAddress() {
@@ -61,5 +69,17 @@ public class DataPointer {
 		return dataBuffer.getFloat(offset << alignment);
 	}
 	
-	private static native ByteBuffer bufferForMemory(long addr, int capacity);
+	// TODO: ideally we'd just directly depend on lwjgl, since we require it for GLFW anyway
+	private static final MethodHandle memByteBuffer;
+	
+	static {
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+		try {
+			Class<?> clz = lookup.findClass("org.lwjgl.system.MemoryUtil");
+			memByteBuffer = lookup.findStatic(clz, "memByteBuffer", MethodType.methodType(ByteBuffer.class, new Class[]{Long.TYPE, Integer.TYPE}));
+		} catch (Throwable err) {
+			System.err.println("Could not find LWJGL MemoryUtil's memByteBuffer method.\nAre you using LWJGL 3.x?");
+			throw new RuntimeException(err);
+		}
+	}
 }

@@ -8,8 +8,6 @@
 
 # jcef sources.
 set(JCEF_SRCS
-  DataPointer.cpp
-  DataPointer.h
   CefApp.cpp
   CefApp.h
   CefAuthCallback_N.cpp

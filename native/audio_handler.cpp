@@ -83,9 +83,12 @@ void AudioHandler::OnAudioStreamPacket(CefRefPtr<CefBrowser> browser, const floa
 
   ScopedJNIBrowser jbrowser(env, browser);
 
+  ScopedJNIObjectLocal dataPtr(
+      env, NewJNIObject(env, "org/cef/misc/DataPointer", "(J)V", (jlong) data));
+
   JNI_CALL_VOID_METHOD(env, handle_, "onAudioStreamPacket",
-                  "(Lorg/cef/browser/CefBrowser;JIJ)V",
-                  jbrowser.get(), (jlong) data, frames, (long long) pts);
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/misc/DataPointer;IJ)V",
+                  jbrowser.get(), dataPtr.get(), frames, (long long) pts);
 }
 
 void AudioHandler::OnAudioStreamStopped(CefRefPtr<CefBrowser> browser) {
