@@ -11,7 +11,7 @@
 AudioHandler::AudioHandler(JNIEnv* env, jobject handler)
     : handle_(env, handler) {}
 
-jobject jniParams(ScopedJNIEnv env, const CefAudioParameters& params) {
+jobject jniParams(ScopedJNIEnv env, jclass clsProps, const CefAudioParameters& params) {
   jclass cls = env->FindClass("org/cef/misc/CefChannelLayout");
   if (cls == nullptr) {
 //    std::cout << "Could not find class 0";
@@ -24,7 +24,7 @@ jobject jniParams(ScopedJNIEnv env, const CefAudioParameters& params) {
   }
   jobject layout = env->CallStaticObjectMethod(cls, getLayout, (int) params.channel_layout);
 
-  cls = env->FindClass("org/cef/misc/CefAudioParameters");
+  cls = clsProps;
   if (cls == nullptr) {
 //    std::cout << "Could not find class 1";
     return nullptr;
@@ -39,6 +39,11 @@ jobject jniParams(ScopedJNIEnv env, const CefAudioParameters& params) {
   return parameters;
 }
 
+jobject jniParams(ScopedJNIEnv env, const CefAudioParameters& params) {
+  jclass cls = env->FindClass("org/cef/misc/CefAudioParameters");
+  return jniParams(env, cls, params);
+}
+
 bool AudioHandler::GetAudioParameters(CefRefPtr<CefBrowser> browser,
                                       CefAudioParameters& params) {
   ScopedJNIEnv env;
@@ -48,10 +53,12 @@ bool AudioHandler::GetAudioParameters(CefRefPtr<CefBrowser> browser,
   ScopedJNIBrowser jbrowser(env, browser);
 
   jboolean jreturn = JNI_FALSE;
+  jclass cls = env->FindClass("org/cef/misc/CefAudioParameters");
+  jobject paramsJni = jniParams(env, cls, params);
 
   JNI_CALL_METHOD(env, handle_, "getAudioParameters",
                        "(Lorg/cef/browser/CefBrowser;Lorg/cef/misc/CefAudioParameters;)Z", Boolean,
-                       jreturn, jbrowser.get(), jniParams(env, params));
+                       jreturn, jbrowser.get(), paramsJni);
 
   return (jreturn != JNI_FALSE);
 }
@@ -76,17 +83,9 @@ void AudioHandler::OnAudioStreamPacket(CefRefPtr<CefBrowser> browser, const floa
 
   ScopedJNIBrowser jbrowser(env, browser);
 
-  // TODO: this should truthfully be using a float buffer, but I'm not yet sure how to do that from JNI
-  jfloatArray jArray = env->NewFloatArray(frames);
-  int size = frames;
-  jfloat* fill = (jfloat*) malloc(size * sizeof(jfloat));
-  for (int i = 0; i < size; i++)
-    fill[i] = data[0][i];
-  env->SetFloatArrayRegion(jArray, 0, size, fill);
-
   JNI_CALL_VOID_METHOD(env, handle_, "onAudioStreamPacket",
-                  "(Lorg/cef/browser/CefBrowser;[FIJ)V",
-                  jbrowser.get(), jArray, frames, (long long) pts);
+                  "(Lorg/cef/browser/CefBrowser;JIJ)V",
+                  jbrowser.get(), (jlong) data, frames, (long long) pts);
 }
 
 void AudioHandler::OnAudioStreamStopped(CefRefPtr<CefBrowser> browser) {
