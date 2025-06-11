@@ -10,7 +10,6 @@ import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefCallback;
 import org.cef.misc.BoolRef;
 import org.cef.network.CefRequest;
-import org.cef.network.CefURLRequest;
 
 /**
  * Implement this interface to handle events related to browser requests. The methods of this class
@@ -24,7 +23,10 @@ public interface CefRequestHandler {
         TS_ABNORMAL_TERMINATION, //!< Non-zero exit status.
         TS_PROCESS_WAS_KILLED, //!< SIGKILL or task manager kill.
         TS_PROCESS_CRASHED, //!< Segmentation fault.
-        TS_PROCESS_OOM //!< Out of memory.
+        TS_PROCESS_OOM, //!< Out of memory.
+        TS_LAUNCH_FAILED, //!< Failed to launch.
+        TS_INTEGRITY_FAILURE, //!< Integrity check failed.
+        TS_NUM_VALUES
     }
 
     /**
@@ -123,6 +125,9 @@ public interface CefRequestHandler {
      * Called on the browser process UI thread when the render process terminates unexpectedly.
      * @param browser The corresponding browser.
      * @param status Indicates how the process was  terminated.
+     * @param error_code The process error code.
+     * @param error_string A string description of the error.
      */
-    void onRenderProcessTerminated(CefBrowser browser, TerminationStatus status);
+    void onRenderProcessTerminated(
+            CefBrowser browser, TerminationStatus status, int error_code, String error_string);
 }

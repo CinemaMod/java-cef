@@ -11,7 +11,6 @@ import org.cef.callback.CefCallback;
 import org.cef.handler.CefLoadHandler.ErrorCode;
 import org.cef.misc.BoolRef;
 import org.cef.network.CefRequest;
-import org.cef.network.CefURLRequest;
 
 /**
  * An abstract adapter class for receiving browser request events.
@@ -51,5 +50,6 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
     }
 
     @Override
-    public void onRenderProcessTerminated(CefBrowser browser, TerminationStatus status) {}
+    public void onRenderProcessTerminated(
+            CefBrowser browser, TerminationStatus status, int error_code, String error_string) {}
 }

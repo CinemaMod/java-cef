@@ -137,7 +137,7 @@ endif()
 
 # Specify the CEF distribution version.
 if(NOT DEFINED CEF_VERSION)
-  set(CEF_VERSION "116.0.27+gd8c85ac+chromium-116.0.5845.190")
+  set(CEF_VERSION "135.0.20+ge7de5c3+chromium-135.0.7049.85")
 endif()
 
 # Determine the platform.

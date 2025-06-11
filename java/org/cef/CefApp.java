@@ -8,10 +8,7 @@ import org.cef.callback.CefSchemeHandlerFactory;
 import org.cef.handler.CefAppHandler;
 import org.cef.handler.CefAppHandlerAdapter;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -101,6 +98,12 @@ public class CefApp extends CefAppHandlerAdapter {
          * message loop is running. You can use all classes and methods of JCEF now.
          */
         INITIALIZED,
+
+        /**
+         * CEF initialization has failed (for example due to a second process using
+         * the same root_cache_path).
+         */
+        INITIALIZATION_FAILED,
 
         /**
          * CefApp is in its shutdown process. All CefClients and CefBrowser
@@ -272,6 +275,7 @@ public class CefApp extends CefAppHandlerAdapter {
             case NONE:
             case SHUTTING_DOWN:
             case TERMINATED:
+            case INITIALIZATION_FAILED:
                 // Ignore shutdown, CefApp is already terminated, in shutdown progress
                 // or was never created (shouldn't be possible)
                 break;
@@ -384,7 +388,11 @@ public class CefApp extends CefAppHandlerAdapter {
             settings.locales_dir_path = localesPath.normalize().toAbsolutePath().toString();
         }
 
-        if (N_Initialize(appHandler_, settings)) setState(CefAppState.INITIALIZED);
+        if (N_Initialize(appHandler_, settings)) {
+                        setState(CefAppState.INITIALIZED);
+                    } else {
+                        setState(CefAppState.INITIALIZATION_FAILED);
+                    }
     }
 
     /**
