@@ -87,7 +87,7 @@ public class CefClient extends CefClientHandler
     }
 
     public CefBrowser createBrowser(String url, boolean isTransparent,
-            CefRequestContext context, CefBrowserSettings settings) {
+                                    CefRequestContext context, CefBrowserSettings settings) {
         if (isDisposed_)
             throw new IllegalStateException("Can't create browser. CefClient is disposed");
         return CefBrowserFactory.create(
@@ -122,7 +122,7 @@ public class CefClient extends CefClientHandler
     protected CefDisplayHandler getDisplayHandler() {
         return this;
     }
-    
+
     @Override
     protected CefAudioHandler getAudioHandler() {
         return this;
@@ -230,7 +230,7 @@ public class CefClient extends CefClientHandler
     @Override
     public boolean onFileDialog(CefBrowser browser, FileDialogMode mode, String title,
                                 String defaultFilePath, Vector<String> acceptFilters, Vector<String> acceptExtensions,
-            Vector<String> acceptDescriptions, CefFileDialogCallback callback) {
+                                Vector<String> acceptDescriptions, CefFileDialogCallback callback) {
         if (dialogHandler_ != null && browser != null) {
             return dialogHandler_.onFileDialog(browser, mode, title, defaultFilePath, acceptFilters,
                     acceptExtensions, acceptDescriptions, callback);
@@ -322,7 +322,7 @@ public class CefClient extends CefClientHandler
 
     @Override
     public boolean onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem,
-                                 String suggestedName, CefBeforeDownloadCallback callback) {
+                                    String suggestedName, CefBeforeDownloadCallback callback) {
         if (downloadHandler_ != null && browser != null)
             return downloadHandler_.onBeforeDownload(
                     browser, downloadItem, suggestedName, callback);
@@ -694,6 +694,15 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
+    public void onAcceleratedPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects, CefAcceleratedPaintInfo info) {
+        if (browser == null) return;
+
+        CefRenderHandler realHandler = browser.getRenderHandler();
+        if (realHandler != null)
+            realHandler.onAcceleratedPaint(browser, popup, dirtyRects, info);
+    }
+
+    @Override
     public void addOnPaintListener(Consumer<CefPaintEvent> listener) {}
 
     @Override
@@ -808,39 +817,39 @@ public class CefClient extends CefClientHandler
     public boolean getScreenInfo(CefBrowser arg0, CefScreenInfo arg1) {
         return false;
     }
-    
+
     // CefAudioHandler
-    
+
     public CefClient addAudioHandler(CefAudioHandler handler) {
         if (audioHandler_ == null) audioHandler_ = handler;
         return this;
     }
-    
+
     public void removeAudioHandler() {
         audioHandler_ = null;
     }
-    
+
     @Override
     public boolean getAudioParameters(CefBrowser browser, CefAudioParameters params) {
         if (audioHandler_ != null) return audioHandler_.getAudioParameters(browser, params);
         return false;
     }
-    
+
     @Override
     public void onAudioStreamStarted(CefBrowser browser, CefAudioParameters params, int channels) {
         if (audioHandler_ != null) audioHandler_.onAudioStreamStarted(browser, params, channels);
     }
-    
+
     @Override
     public void onAudioStreamPacket(CefBrowser browser, DataPointer data, int frames, long pts) {
         if (audioHandler_ != null) audioHandler_.onAudioStreamPacket(browser, data, frames, pts);
     }
-    
+
     @Override
     public void onAudioStreamStopped(CefBrowser browser) {
         if (audioHandler_ != null) audioHandler_.onAudioStreamStopped(browser);
     }
-    
+
     @Override
     public void onAudioStreamError(CefBrowser browser, String text) {
         if (audioHandler_ != null) audioHandler_.onAudioStreamError(browser, text);
